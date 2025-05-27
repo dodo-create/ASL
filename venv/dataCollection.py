@@ -6,55 +6,45 @@ import math
 cap = cv2.VideoCapture(0)
 detector = HandDetector(maxHands=1) #Maximum Amount of hands to be detected
 
-
 offset = 20 #so the cropped image isnt tightbound, has some extra space
 imgSize = 300 #defined image size
-
-
-
 
 #Starts the Camera
 while True:
     success, img = cap.read()
     hands, img = detector.findHands(img) #Locates the hand, with skeleton
+
     #Cropping
     if hands:
         hand = hands[0]
-        x,y,w,h = hand['bbox'] #Gives us the values of the bounding box from the dictionary
+        x, y, w, h = hand['bbox'] #Gives us the values of the bounding box from the dictionary
 
         # Crop the image first (fixed missing definition)
         imgCrop = img[y-offset:y+h+offset, x-offset:x+w+offset]
 
-
         #Creating an Image by ourself so all gestures have the same boundary
-        imgWhite = np.ones((imgSize,imgSize,3),np.uint8)*255 #a square of 300x300, 3 is the colur information a white block
-        imgCropShape = imgCrop.shape #matrix of 3 values height,width,channel
+        imgWhite = np.ones((imgSize, imgSize, 3), np.uint8) * 255 #a square of 300x300, 3 is the colur information a white block
 
-        imgWhite[0:imgCropShape[0],0:imgCropShape[1]] = imgCrop
+        aspectRatio = h / w
 
-        aspectRatio = h/w
-
-        if aspectRatio>1:
+        if aspectRatio > 1:
             k = imgSize / h
-            wCal = math.ceil(k*w)
-            imgResize = cv2.resize(imgCrop,(wCal, imgSize))
+            wCal = math.ceil(k * w)
+            imgResize = cv2.resize(imgCrop, (wCal, imgSize))
             imgResizeShape = imgResize.shape
-            imgWhite[0:imgResizeShape[0], 0:imgResizeShape[1]] = imgResize
+            wGap = math.ceil((imgSize - wCal) / 2)
+            imgWhite[:, wGap:wCal + wGap] = imgResize
 
+        else:
+            k = imgSize / w
+            hCal = math.ceil(k * h)
+            imgResize = cv2.resize(imgCrop, (imgSize, hCal))
+            imgResizeShape = imgResize.shape
+            hGap = math.ceil((imgSize - hCal) / 2)
+            imgWhite[hGap:hCal + hGap, :] = imgResize
 
-
-
-       
-
-        imgCrop = img[y-offset:y+h+offset,x-offset:x+w+offset] #since it is a matrix, we have defined the ranges/dimensions of the crop 
         cv2.imshow("ImageCrop", imgCrop)
         cv2.imshow("ImageWhite", imgWhite)
 
-
-
-
-
-    cv2.imshow("Image",img)
+    cv2.imshow("Image", img)
     cv2.waitKey(1)
-
-
