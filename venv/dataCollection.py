@@ -35,7 +35,8 @@ while True:
             wCal = math.ceil(k*w) #rounds off to the higher integer
             imgResize = cv2.resize(imgCrop,(wCal,imgSize))
             imgResizeShape = imgResize.shape
-            imgWhite[0:imgResizeShape[0],0:imgResizeShape[1]] = imgCrop #Opens the image on top of the white image
+            wGap = math.ceil((imgSize-wCal)/2)
+            imgWhite[ : , wGap : wCal + wGap] = imgCrop #Opens the image on top of the white image
             
 
 
