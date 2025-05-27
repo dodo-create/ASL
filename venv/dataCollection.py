@@ -22,25 +22,29 @@ while True:
         hand = hands[0]
         x,y,w,h = hand['bbox'] #Gives us the values of the bounding box from the dictionary
 
+        # Crop the image first (fixed missing definition)
+        imgCrop = img[y-offset:y+h+offset, x-offset:x+w+offset]
+
+
         #Creating an Image by ourself so all gestures have the same boundary
         imgWhite = np.ones((imgSize,imgSize,3),np.uint8)*255 #a square of 300x300, 3 is the colur information a white block
         imgCropShape = imgCrop.shape #matrix of 3 values height,width,channel
 
-       
+        imgWhite[0:imgCropShape[0],0:imgCropShape[1]] = imgCrop
 
-        aspectRatio = h/w #if value >1 height is greater, if value<1 width is greater if value=1 its a sqaure
+        aspectRatio = h/w
 
-        if aspectRatio > 1:
-            k = imgSize/h  #stretching the height
-            wCal = math.ceil(k*w) #rounds off to the higher integer
-            imgResize = cv2.resize(imgCrop,(wCal,imgSize))
+        if aspectRatio>1:
+            k = imgSize / h
+            wCal = math.ceil(k*w)
+            imgResize = cv2.resize(imgCrop,(wCal, imgSize))
             imgResizeShape = imgResize.shape
-            wGap = math.ceil((imgSize-wCal)/2)
-            imgWhite[ : , wGap : wCal + wGap] = imgCrop #Opens the image on top of the white image
-            
+            imgWhite[0:imgResizeShape[0], 0:imgResizeShape[1]] = imgResize
 
 
 
+
+       
 
         imgCrop = img[y-offset:y+h+offset,x-offset:x+w+offset] #since it is a matrix, we have defined the ranges/dimensions of the crop 
         cv2.imshow("ImageCrop", imgCrop)
