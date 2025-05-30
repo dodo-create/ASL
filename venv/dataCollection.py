@@ -13,7 +13,7 @@ offset = 20 #so the cropped image isnt tightbound, has some extra space
 imgSize = 300 #defined image size
 
 
-folder = "Data/C"
+folder = "Data/B"
 counter = 0
 
 
